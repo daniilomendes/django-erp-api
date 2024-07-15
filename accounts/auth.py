@@ -32,7 +32,7 @@ class Authentication:
             raise APIException('O id da empresa não deve ser null')
         
         user = User
-        if user.objects.filter(email=email).exists:
+        if user.objects.filter(email=email).exists():
             raise APIException('Este email já existe na plataforma')
         
         password_hashed = make_password(password)

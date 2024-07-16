@@ -19,7 +19,7 @@ class Tasks(Base):
 
         return Response({"tasks": serializer.data})
     
-    def put(self, request):
+    def post(self, request):
         employee_id = request.data.get('employee_id')
         title = request.data.get('title')
         description = request.data.get('description')
@@ -35,9 +35,11 @@ class Tasks(Base):
         
         if due_date:
             try:
-                due_date = datetime.datetime.strptime(due_date, "%d/%m/%Y %H:%M")
+                due_date = datetime.datetime.strptime(
+                    due_date, "%d/%m/%Y %H:%M")
             except ValueError:
-                raise APIException("A data deve ter o padrão: d/m/Y H:M", "date_invalid")
+                raise APIException(
+                    "A data deve ter o padrão: d/m/Y H:M", "date_invalid")
 
         task = Task.objects.create(
             title=title,
@@ -77,13 +79,21 @@ class TaskDetail(Base):
         self.get_status(status_id)
         self.get_employee(employee_id, request.user.id)
 
+        if due_date and due_date != task.due_date:
+            try:
+                due_date = datetime.datetime.strptime(
+                    due_date, "%d/%m/%Y %H:%M")
+            except ValueError:
+                raise APIException(
+                    "A data deve ter o padrão: d/m/Y H:M", "date_invalid")
+
         data= {
             "title": title,
             "description": description,
             "due_date": due_date,
         }
 
-        serializer = TaskSerializer(task, data=data)
+        serializer = TaskSerializer(task, data=data, partial=True)
 
         if not serializer.is_valid():
             raise APIException("Não foi possível editar a tarefa")
@@ -94,7 +104,7 @@ class TaskDetail(Base):
         task.employee_id = employee_id
         task.save()
 
-        return Response({"task", serializer.data})
+        return Response({"task": serializer.data})
     
     def delete(self, request, task_id):
         enterprise_id = self.get_enterprise_id(request.user.id)

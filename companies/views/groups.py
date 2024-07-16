@@ -101,6 +101,8 @@ class GroupDetail(Base):
 
             except ValueError:
                 raise APIException("Envie as permissões no padrão correto")
+        
+        return Response({"success": True})
 
     def delete(self, request, group_id):
         enterprise_id = self.get_enterprise_id(request.user.id)

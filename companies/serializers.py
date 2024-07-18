@@ -47,9 +47,9 @@ class EmployeeSerializer(serializers.ModelSerializer):
         groupsDATA = []
 
         for group in groupsDB:
-            groupsDATA({
-                'id': group.group.id,
-                'name': group.group.name
+            groupsDATA.append({
+                "id": group.group.id,
+                "name": group.group.name
             })
 
         return groupsDATA
